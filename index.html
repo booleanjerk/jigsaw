@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jigsaw Group Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .input-area {
+            margin: 20px 0;
+            width: 100%;
+        }
+        label {
+            display: block;
+            text-align: left;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 14px;
+            text-align: left;
+        }
+        .groups {
+            margin-top: 20px;
+            width: 100%;
+        }
+        .group {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .glow-on-hover {
+            margin-top: 20px;
+            width: 220px;
+            height: 50px;
+            border: none;
+            outline: none;
+            color: #fff;
+            background: #111;
+            cursor: pointer;
+            position: relative;
+            z-index: 0;
+            border-radius: 10px;
+        }
+        .glow-on-hover:before {
+            content: '';
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            background-size: 400%;
+            z-index: -1;
+            filter: blur(5px);
+            width: calc(100% + 4px);
+            height: calc(100% + 4px);
+            animation: glowing 20s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            border-radius: 10px;
+        }
+        .glow-on-hover:active {
+            color: #000;
+        }
+        .glow-on-hover:active:after {
+            background: transparent;
+        }
+        .glow-on-hover:hover:before {
+            opacity: 1;
+        }
+        .glow-on-hover:after {
+            z-index: -1;
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #111;
+            left: 0;
+            top: 0;
+            border-radius: 10px;
+        }
+        @keyframes glowing {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Jigsaw Group Generator</h1>
+    <div class="container">
+        
+            <label for="names">Paste Names (comma-separated):</label>
+            <textarea id="names" placeholder="E.g., Alice, Bob, Charlie, David"></textarea>
+        
+        <label for="groupNames">Original Group Names (comma-separated):</label>
+        <textarea id="groupNames" placeholder="E.g., Red, Blue, Green"></textarea>
+        <button class="glow-on-hover" onclick="generateGroups()">Generate Groups</button>
+        <div class="groups" id="originalGroups"></div>
+        <div class="groups" id="expertGroups"></div>
+    </div>
+
+    <script>
+        function generateGroups() {
+            const namesInput = document.getElementById('names').value.trim();
+            const groupNamesInput = document.getElementById('groupNames').value.trim();
+
+            if (!namesInput) {
+                alert("Please enter names separated by commas.");
+                return;
+            }
+
+            const groupNames = groupNamesInput
+                .split(',')
+                .map(name => name.trim())
+                .filter(name => name !== "");
+            const groupCount = groupNames.length;
+
+            if (groupCount < 2) {
+                alert("Please provide at least two group names, separated by commas.");
+                return;
+            }
+
+            const names = namesInput.split(',').map(name => name.trim()).filter(name => name !== "");
+            if (names.length === 0) {
+                alert("No valid names found.");
+                return;
+            }
+
+            const shuffled = [...names].sort(() => Math.random() - 0.5); // Shuffle names
+            const originalGroups = Array.from({ length: groupCount }, () => []);
+
+            // Assign names to original groups
+            shuffled.forEach((name, index) => {
+                originalGroups[index % groupCount].push(name);
+            });
+
+            displayGroups(originalGroups, "Original Groups", "originalGroups", groupNames);
+
+            // Create expert groups
+            const maxGroupSize = Math.ceil(names.length / groupCount);
+            const expertGroups = Array.from({ length: maxGroupSize }, () => []);
+
+            originalGroups.forEach(group => {
+                group.forEach((name, i) => {
+                    expertGroups[i].push(name);
+                });
+            });
+
+            displayGroups(expertGroups, "Expert Groups", "expertGroups");
+        }
+
+        function displayGroups(groups, title, containerId, groupNames = []) {
+            const groupsContainer = document.getElementById(containerId);
+            groupsContainer.innerHTML = `<h2>${title}</h2>`; // Set title and clear previous groups
+
+            groups.forEach((group, i) => {
+                const groupDiv = document.createElement('div');
+                groupDiv.classList.add('group');
+                const groupName = groupNames[i] ? `<strong>${groupNames[i]}:</strong>` : `<strong>Group ${i + 1}:</strong>`;
+                groupDiv.innerHTML = `${groupName} ${group.join(', ')}`;
+                groupsContainer.appendChild(groupDiv);
+            });
+        }
+    </script>
+</body>
+</html>
