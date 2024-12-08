@@ -119,68 +119,77 @@
         <div class="groups" id="expertGroups"></div>
     </div>
 
-    <script>
-        function generateGroups() {
-            const namesInput = document.getElementById('names').value.trim();
-            const groupNamesInput = document.getElementById('groupNames').value.trim();
+   <script>
+    // Detect Enter key press
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent the default action (e.g., adding a newline in textarea)
+            generateGroups(); // Call the generateGroups function
+        }
+    });
 
-            if (!namesInput) {
-                alert("Please enter names separated by commas.");
-                return;
-            }
+    function generateGroups() {
+        const namesInput = document.getElementById('names').value.trim();
+        const groupNamesInput = document.getElementById('groupNames').value.trim();
 
-            const groupNames = groupNamesInput
-                .split(',')
-                .map(name => name.trim())
-                .filter(name => name !== "");
-            const groupCount = groupNames.length;
-
-            if (groupCount < 2) {
-                alert("Please provide at least two group names, separated by commas.");
-                return;
-            }
-
-            const names = namesInput.split(',').map(name => name.trim()).filter(name => name !== "");
-            if (names.length === 0) {
-                alert("No valid names found.");
-                return;
-            }
-
-            const shuffled = [...names].sort(() => Math.random() - 0.5); // Shuffle names
-            const originalGroups = Array.from({ length: groupCount }, () => []);
-
-            // Assign names to original groups
-            shuffled.forEach((name, index) => {
-                originalGroups[index % groupCount].push(name);
-            });
-
-            displayGroups(originalGroups, "Original Groups", "originalGroups", groupNames);
-
-            // Create expert groups
-            const maxGroupSize = Math.ceil(names.length / groupCount);
-            const expertGroups = Array.from({ length: maxGroupSize }, () => []);
-
-            originalGroups.forEach(group => {
-                group.forEach((name, i) => {
-                    expertGroups[i].push(name);
-                });
-            });
-
-            displayGroups(expertGroups, "Expert Groups", "expertGroups");
+        if (!namesInput) {
+            alert("Please enter names separated by commas.");
+            return;
         }
 
-        function displayGroups(groups, title, containerId, groupNames = []) {
-            const groupsContainer = document.getElementById(containerId);
-            groupsContainer.innerHTML = `<h2>${title}</h2>`; // Set title and clear previous groups
+        const groupNames = groupNamesInput
+            .split(',')
+            .map(name => name.trim())
+            .filter(name => name !== "");
+        const groupCount = groupNames.length;
 
-            groups.forEach((group, i) => {
-                const groupDiv = document.createElement('div');
-                groupDiv.classList.add('group');
-                const groupName = groupNames[i] ? `<strong>${groupNames[i]}:</strong>` : `<strong>Group ${i + 1}:</strong>`;
-                groupDiv.innerHTML = `${groupName} ${group.join(', ')}`;
-                groupsContainer.appendChild(groupDiv);
-            });
+        if (groupCount < 2) {
+            alert("Please provide at least two group names, separated by commas.");
+            return;
         }
-    </script>
+
+        const names = namesInput.split(',').map(name => name.trim()).filter(name => name !== "");
+        if (names.length === 0) {
+            alert("No valid names found.");
+            return;
+        }
+
+        const shuffled = [...names].sort(() => Math.random() - 0.5); // Shuffle names
+        const originalGroups = Array.from({ length: groupCount }, () => []);
+
+        // Assign names to original groups
+        shuffled.forEach((name, index) => {
+            originalGroups[index % groupCount].push(name);
+        });
+
+        displayGroups(originalGroups, "Original Groups", "originalGroups", groupNames);
+
+        // Create expert groups
+        const maxGroupSize = Math.ceil(names.length / groupCount);
+        const expertGroups = Array.from({ length: maxGroupSize }, () => []);
+
+        originalGroups.forEach(group => {
+            group.forEach((name, i) => {
+                expertGroups[i].push(name);
+            });
+        });
+
+        displayGroups(expertGroups, "Expert Groups", "expertGroups");
+    }
+
+    function displayGroups(groups, title, containerId, groupNames = []) {
+        const groupsContainer = document.getElementById(containerId);
+        groupsContainer.innerHTML = `<h2>${title}</h2>`; // Set title and clear previous groups
+
+        groups.forEach((group, i) => {
+            const groupDiv = document.createElement('div');
+            groupDiv.classList.add('group');
+            const groupName = groupNames[i] ? `<strong>${groupNames[i]}:</strong>` : `<strong>Group ${i + 1}:</strong>`;
+            groupDiv.innerHTML = `${groupName} ${group.join(', ')}`;
+            groupsContainer.appendChild(groupDiv);
+        });
+    }
+</script>
+
 </body>
 </html>
