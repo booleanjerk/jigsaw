@@ -128,54 +128,62 @@
         }
     });
 
-    function generateGroups() {
-        const namesInput = document.getElementById('names').value.trim();
-        const groupNamesInput = document.getElementById('groupNames').value.trim();
+function generateGroups() {
+    const namesInput = document.getElementById('names').value.trim();
+    const groupNamesInput = document.getElementById('groupNames').value.trim();
 
-        if (!namesInput) {
-            alert("Please enter names separated by commas.");
-            return;
-        }
-
-        const groupNames = groupNamesInput
-            .split(',')
-            .map(name => name.trim())
-            .filter(name => name !== "");
-        const groupCount = groupNames.length;
-
-        if (groupCount < 2) {
-            alert("Please provide at least two group names, separated by commas.");
-            return;
-        }
-
-        const names = namesInput.split(',').map(name => name.trim()).filter(name => name !== "");
-        if (names.length === 0) {
-            alert("No valid names found.");
-            return;
-        }
-
-        const shuffled = [...names].sort(() => Math.random() - 0.5); // Shuffle names
-        const originalGroups = Array.from({ length: groupCount }, () => []);
-
-        // Assign names to original groups
-        shuffled.forEach((name, index) => {
-            originalGroups[index % groupCount].push(name);
-        });
-
-        displayGroups(originalGroups, "Original Groups", "originalGroups", groupNames);
-
-        // Create expert groups
-        const maxGroupSize = Math.ceil(names.length / groupCount);
-        const expertGroups = Array.from({ length: maxGroupSize }, () => []);
-
-        originalGroups.forEach(group => {
-            group.forEach((name, i) => {
-                expertGroups[i].push(name);
-            });
-        });
-
-        displayGroups(expertGroups, "Expert Groups", "expertGroups");
+    if (!namesInput) {
+        alert("Please enter names separated by commas or on new lines.");
+        return;
     }
+
+    // Parse group names (allowing both commas and newlines)
+    const groupNames = groupNamesInput
+        .split(/[\s,]+/)
+        .map(name => name.trim())
+        .filter(name => name !== "");
+    const groupCount = groupNames.length;
+
+    if (groupCount < 2) {
+        alert("Please provide at least two group names, separated by commas or on new lines.");
+        return;
+    }
+
+    // Parse names (allowing both commas and newlines)
+    const names = namesInput
+        .split(/[\s,]+/)
+        .map(name => name.trim())
+        .filter(name => name !== "");
+
+    if (names.length === 0) {
+        alert("No valid names found.");
+        return;
+    }
+
+    const shuffled = [...names].sort(() => Math.random() - 0.5); // Shuffle names
+    const originalGroups = Array.from({ length: groupCount }, () => []);
+
+    // Assign names to original groups
+    shuffled.forEach((name, index) => {
+        originalGroups[index % groupCount].push(name);
+    });
+
+    displayGroups(originalGroups, "Original Groups", "originalGroups", groupNames);
+
+    // Create expert groups
+    const maxGroupSize = Math.ceil(names.length / groupCount);
+    const expertGroups = Array.from({ length: maxGroupSize }, () => []);
+
+    originalGroups.forEach(group => {
+        group.forEach((name, i) => {
+            expertGroups[i].push(name);
+        });
+    });
+
+    displayGroups(expertGroups, "Expert Groups", "expertGroups");
+}
+
+
 
     function displayGroups(groups, title, containerId, groupNames = []) {
         const groupsContainer = document.getElementById(containerId);
